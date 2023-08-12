@@ -1,0 +1,71 @@
+package application;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+public class WordCountGUI extends Application {
+    private TextArea textArea;
+    private Label wordCountLabel;
+    private Label uniqueWordsLabel;
+    private Label wordFrequencyLabel;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Word Count Tool");
+
+        textArea = new TextArea();
+        textArea.setWrapText(true);
+
+        Button countButton = new Button("Count Words");
+        countButton.setOnAction(e -> countWords());
+
+        wordCountLabel = new Label("Total Words: ");
+        uniqueWordsLabel = new Label("Unique Words: ");
+        wordFrequencyLabel = new Label("Word Frequency:");
+
+        VBox vBox = new VBox(10);
+        vBox.getChildren().addAll(textArea, countButton, wordCountLabel, uniqueWordsLabel, wordFrequencyLabel);
+
+        Scene scene = new Scene(vBox, 400, 400);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void countWords() {
+        String inputText = textArea.getText();
+        Map<String, Integer> wordCountMap = new HashMap<>();
+        String[] words = inputText.split("\\s+");
+
+        for (String word : words) {
+            String cleanedWord = word.replaceAll("[^a-zA-Z]", "").toLowerCase();
+            if (!cleanedWord.isEmpty()) {
+                wordCountMap.put(cleanedWord, wordCountMap.getOrDefault(cleanedWord, 0) + 1);
+            }
+        }
+
+        int totalWords = words.length;
+        int uniqueWords = wordCountMap.size();
+
+        wordCountLabel.setText("Total Words: " + totalWords);
+        uniqueWordsLabel.setText("Unique Words: " + uniqueWords);
+
+        StringBuilder frequencyText = new StringBuilder("Word Frequency:\n");
+        for (Map.Entry<String, Integer> entry : wordCountMap.entrySet()) {
+            frequencyText.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        wordFrequencyLabel.setText(frequencyText.toString());
+    }
+}
+
